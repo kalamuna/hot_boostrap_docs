@@ -1,0 +1,112 @@
+<?php
+/**
+ * @file
+ * Provide User migration plan and permissions via features
+ * and pages to demo bootstrap
+ */
+
+include_once 'hot_bootstrap_docs.features.inc';
+
+define('hot_bootstrap_docs_TEMPLATES', 'templates');
+
+
+/**
+ * Implements hook_menu().
+ * TODO - add a function on the page callback and add our css there instead
+ */
+function hot_bootstrap_docs_menu() {
+  $items = array();
+
+  $items['kalatheme'] = array(
+    'title' => 'Theme Tests',
+    'description' => 'Pages demonstrating widgets and molecular components of the site build',
+    'type' => MENU_NORMAL_ITEM, // so the path is available in the menu tree
+    'access arguments' => array('administer nodes'), // should get inherited by tabs
+    'page callback' => 'theme',
+    'page arguments' => array('typography_test_page'), // this should change. We should have intro text
+  );
+
+  $items['kalatheme/bootstrap/css'] = array(
+    'title' => 'Bootstrap Base CSS',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'theme',
+    'page arguments' => array('bootstrap_css'),
+    'access arguments' => array('administer nodes'),
+    'weight' => '-6',
+  );
+  $items['kalatheme/bootstrap/components'] = array(
+    'title' => 'Bootstrap Components',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'theme',
+    'page arguments' => array('bootstrap3_components'),
+    'access arguments' => array('administer nodes'),
+    'weight' => '-5',
+  );
+  $items['kalatheme/bootstrap/js'] = array(
+    'title' => 'Bootstrap JavaScript',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'theme',
+    'page arguments' => array('bootstrap_js'),
+    'access arguments' => array('administer nodes'),
+    'weight' => '-4',
+  );
+
+  $items['kalatheme/typography'] = array(
+    'title' => 'Typography',
+    'weight' => '-1',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'page callback' => 'theme',
+    'page arguments' => array('typography_test_page'),
+    'access arguments' => array('administer nodes'),
+    'weight' => '-1',
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function hot_bootstrap_docs_theme() {
+  $items = array();
+
+  $items['bootstrap_css'] = array(
+    'template' => hot_bootstrap_docs_TEMPLATES . '/bootstrap-css'
+  );
+  $items['bootstrap3_components'] = array(
+    'template' => hot_bootstrap_docs_TEMPLATES . '/bootstrap-components'
+  );
+  $items['bootstrap_js'] = array(
+    'template' => hot_bootstrap_docs_TEMPLATES . '/bootstrap-js'
+  );
+
+  $items['typography_test_page'] = array(
+    'template' => hot_bootstrap_docs_TEMPLATES . '/typography-test-page',
+  );
+
+  return $items;
+}
+
+
+
+/**
+ * Implements hook_preprocess_page().
+ * TODO - add path_to_subtheme + if file exists to construct our path to bootstrapdocs
+ */
+function hot_bootstrap_docs_preprocess_page(&$vars, $hook) {
+
+  // we expect a sassified Kalatheme subtheme to be the active theme.
+  $arg = drupal_get_path_alias();
+
+  if (arg(0) == 'kalatheme' && arg(1) == 'bootstrap') {
+    $bootstrapdocs = libraries_get_path('bootstrap') . '/assets';
+    drupal_add_css($bootstrapdocs . '/css/docs.css');
+    drupal_add_css($bootstrapdocs . '/css/pygments-manni.css');
+
+    drupal_add_js( $bootstrapdocs . "/js/widgets.js", array('type' => 'file', 'scope' => 'footer'));
+    drupal_add_js( $bootstrapdocs . "/js/holder.js", array('type' => 'file', 'scope' => 'footer'));
+    drupal_add_js( $bootstrapdocs . "/js/application.js", array('type' => 'file', 'scope' => 'footer'));
+    drupal_add_js( $bootstrapdocs . "/js/application.js", array('type' => 'file', 'scope' => 'footer'));
+  }
+}
