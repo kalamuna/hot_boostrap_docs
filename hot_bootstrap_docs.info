@@ -1,0 +1,7 @@
+name = Hot Bootstrap Docs
+description = The Bootstrap docs in the context of a Drupal site.
+core = 7.x
+package = Kalamuna
+version = 7.x-0.1
+
+dependencies[] = libraries
