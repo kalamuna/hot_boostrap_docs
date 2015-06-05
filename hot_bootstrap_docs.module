@@ -64,23 +64,19 @@ function hot_bootstrap_docs_menu() {
 
 function hot_bootstrap_docs_libraries_info() {
   // Expected to be extracted into 'sites/all/libraries/simple'.
-  $libraries['bootstrap-docs'] = array(
+  $libraries['bootstrap_docs'] = array(
     'name' => 'Hot Bootstrap Docs',
     'vendor url' => 'http://getbootstrap.com',
     'download url' => 'http://getbootstrap.com/getting-started/',
-    'version arguments' => array(
-      'file' => 'package.js', // Could be any file with version info 
-      'pattern' => '/Version (\d+)/', 
-      'lines' => 5,
-    ),
+    'path' => 'assets',
+    'version callback' => '_hot_bootstrap_docs_version',
     'files' => array(
       'css' => array(
-        'assets/css/docs.min.css',
+        'css/docs.min.css' => array(),
       ),
       'js' => array(
-        'assets/js/widgets.js',
-        'assets/js/holder.js',
-        'assets/js/application.js',
+        'js/docs.min.js' => array(),
+        'js/customize.min.js' => array(),
       ),
     ),
   );
@@ -111,16 +107,39 @@ function hot_bootstrap_docs_theme() {
   return $items;
 }
 
-function hot_bootstrap_docs_bootstrap_css_preprocess(&$vars){
-  xdebug_break();
+/**
+ * Implements hook_preprocess_bootstrap_css.
+ */
+function hot_bootstrap_docs_preprocess_bootstrap_css(&$vars){
+  _hot_bootstrap_docs_load_library();
 }
 
 /**
- * Implements hook_preprocess_page().
+ * Implements hook_preprocess_bootstrap_components.
  */
-function hot_bootstrap_docs_preprocess_page(&$vars, $hook) {
-  if (arg(0) == 'bootstrap-docs' && module_exists('libraries')) {
-    // Load the 
-    libraries_load('bootstrap-docs');
+function hot_bootstrap_docs_preprocess_bootstrap_components(&$vars){
+  _hot_bootstrap_docs_load_library();
+}
+
+/**
+ * Implements hook_preprocess_bootstrap_js.
+ */
+function hot_bootstrap_docs_preprocess_bootstrap_js(&$vars){
+  _hot_bootstrap_docs_load_library();
+}
+
+/**
+ * Load the bootstrap_docs library.
+ */
+function _hot_bootstrap_docs_load_library(){
+  $bs_library = libraries_load('bootstrap_docs');
+  if (empty($bs_library)) {
+    drupal_set_message('The Bootstrap docs library could not be loaded', 'error');
   }
+}
+
+// Hotwire the library version for now.
+// TODO learn regex.
+function _hot_bootstrap_docs_version(){
+  return TRUE;
 }
